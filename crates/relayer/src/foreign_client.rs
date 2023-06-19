@@ -1621,7 +1621,7 @@ impl<DstChain: ChainHandle, SrcChain: ChainHandle> ForeignClient<DstChain, SrcCh
         }
 
         if self
-            .dst_chain()
+            .src_chain()
             .config()
             .map_err(|e| {
                 ForeignClientError::misbehaviour(
