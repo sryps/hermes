@@ -1,5 +1,6 @@
 use crate::prelude::*;
 
+use ibc_proto::google::protobuf::Any as ProtoAny;
 use ibc_proto::interchain_security::ccv::provider::v1::MsgSubmitConsumerMisbehaviour as RawIcsMisbehaviour;
 use ibc_proto::protobuf::Protobuf;
 use serde::{Deserialize, Serialize};
@@ -15,7 +16,7 @@ pub const ICS_MISBEHAVIOR_TYPE_URL: &str =
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 pub struct MsgSubmitIcsConsumerMisbehaviour {
     pub submitter: Signer,
-    pub misbehaviour: Misbehaviour,
+    pub misbehaviour: ProtoAny,
 }
 
 impl Msg for MsgSubmitIcsConsumerMisbehaviour {
