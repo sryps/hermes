@@ -19,15 +19,19 @@ where
     async fn query_chain_status(chain: &Chain) -> Result<Chain::ChainStatus, Chain::Error>;
 }
 
-#[async_trait]
-impl<Chain, Component> ChainStatusQuerier<Chain> for Component
-where
-    Chain: HasChainStatusType + HasErrorType,
-    Component: DelegateComponent<ChainStatusQuerierComponent>,
-    Component::Delegate: ChainStatusQuerier<Chain>,
-{
-    async fn query_chain_status(chain: &Chain) -> Result<Chain::ChainStatus, Chain::Error> {
-        Component::Delegate::query_chain_status(chain).await
+crate::replace_self! {
+    chain: Chain,
+
+    #[async_trait]
+    impl<Chain, Component> ChainStatusQuerier<Self> for Component
+    where
+        Chain: HasChainStatusType + HasErrorType,
+        Component: DelegateComponent<ChainStatusQuerierComponent>,
+        Component::Delegate: ChainStatusQuerier<Chain>,
+    {
+        async fn query_chain_status(&self) -> Result<Self::ChainStatus, Chain::Error> {
+            Component::Delegate::query_chain_status(chain).await
+        }
     }
 }
 
