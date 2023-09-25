@@ -1,6 +1,8 @@
 #[macro_export]
 macro_rules! define_component {
     (
+        @name( $component_name:ident )
+
         @meta(
             $( #[ $attributes:meta ] )*
         )
@@ -17,15 +19,17 @@ macro_rules! define_component {
         @constraints(
             $( $extra_constraint:tt )*
         )
-        @methods(
-            $(
-                $( $async:ident )? fn $method_name:ident (
+
+        $(
+            @method(
+                fn $method_name:ident (
                     $( $args:tt )*
-                ) $( -> $return:ty )?
-                ;
-            )*
-        )
+                ) $( -> $( $return:tt )+ )?
+            )
+        )+
     ) => {
+        pub struct $component_name;
+
         $( #[ $attributes ] )*
         pub trait $consumer_trait < $( $( $generic_type ),* )? >
             : $( $( $self_constraint )* )?
@@ -33,9 +37,9 @@ macro_rules! define_component {
             $( $extra_constraint )*
         {
             $(
-                $( $async )? fn $method_name (
+                fn $method_name (
                     $( $args )*
-                ) $( -> $return )?
+                ) $( -> $( $return )* )?
                 ;
             )*
         }
@@ -50,20 +54,48 @@ macro_rules! define_component {
                 $( $extra_constraint )*
             {
                 $(
-                    $( $async )? fn $method_name (
+                    fn $method_name (
                         $( $args )*
-                    ) $( -> $return )?
+                    ) $( -> $( $return )* )?
                     ;
                 )*
             }
         }
+
+        // $( #[ $attributes ] )*
+        // impl< $context_type, $( $( $generic_type ),* )? >
+        //     $consumer_trait < $( $( $generic_type ),* )? >
+        //     for $context_type
+        // where
+        //     $context_type: $crate::core::traits::component::HasComponents,
+        //     $context_type :: Components : $provider_trait < $context_type, $( $( $generic_type ),* )? >,
+        //     $( $context_type : $( $self_constraint )* , )?
+        //     $( $extra_constraint )*
+        // {
+        //     $(
+        //         fn $method_name (
+        //             $( $args )*
+        //         ) $( -> $( $return )* )?
+        //         {
+        //             $crate::arg_vars!(
+        //                 @method( $context_type :: Components :: $method_name )
+        //                 @args( $( $args )* )
+        //                 @out( )
+        //             )
+        //         }
+        //     )*
+        // }
+
     }
 }
 
+use crate::core::traits::error::HasErrorType;
 use crate::std_prelude::*;
 use async_trait::async_trait;
 
 crate::define_component! {
+    @name( ActionPerformerComponent )
+
     @meta(
         #[async_trait]
     )
@@ -73,14 +105,14 @@ crate::define_component! {
     )
 
     @consumer(
-        CanPerformAction<Foo>: 'static
+        CanPerformAction<Foo>: HasErrorType
     )
 
     @constraints(
         Foo: Send
     )
 
-    @methods(
-        async fn perform_action(&self) -> Result<(), ()>;
+    @method(
+        fn perform_action(&self) -> Result<(), Self::Error>
     )
 }

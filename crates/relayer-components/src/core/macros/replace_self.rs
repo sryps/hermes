@@ -1,11 +1,3 @@
-// test
-crate::replace_self! {
-    app: App,
-    trait Foo<Self> {
-        fn foo(self, arr: &[Self]) -> ();
-    }
-}
-
 #[macro_export]
 macro_rules! replace_self {
     (   $val:ident : $type:ident,
@@ -201,4 +193,15 @@ macro_rules! replace_self {
             @outer( $( $outer )* )
         );
     };
+}
+
+// test
+crate::replace_self! {
+    app: App,
+    trait Foo<Self>
+    where
+        Self: crate::core::traits::error::HasErrorType,
+    {
+        fn foo(self, arr: &[Self]) -> Self::Error;
+    }
 }
