@@ -1,3 +1,4 @@
+// test
 crate::replace_self! {
     app: App,
     trait Foo<Self> {
@@ -7,7 +8,9 @@ crate::replace_self! {
 
 #[macro_export]
 macro_rules! replace_self {
-    ($val:ident : $type:ident, $( $rest:tt )*) => {
+    (   $val:ident : $type:ident,
+        $( $rest:tt )*
+    ) => {
         $crate::replace_self!{
             @with($val : $type)
             @out()

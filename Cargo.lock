@@ -1728,6 +1728,7 @@ dependencies = [
  "async-trait",
  "futures-core",
  "futures-util",
+ "paste",
 ]
 
 [[package]]
