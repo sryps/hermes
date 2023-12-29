@@ -15,7 +15,7 @@ use crate::path::PathIdentifiers;
 use crate::util::collate::CollatedIterExt;
 
 /// Limit on how many query results should be expected.
-pub const CHUNK_LENGTH: usize = 50;
+pub const CHUNK_LENGTH: usize = 5;
 
 /// Returns an iterator on batches of packet events.
 pub fn query_packet_events_with<'a, ChainA, QueryFn>(
